@@ -74,6 +74,7 @@ docs/_build/
 # PyCharm
 .idea/inspectionProfiles
 .idea/
+.DS_Store
 
 
 # PyBuilder
