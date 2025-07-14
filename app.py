@@ -48,12 +48,10 @@ else:
                 years = df["Year"].unique()
                 value = st.slider("Select a number", max_value=years.max(), min_value=years.min())  # min, max, default
                 st.write(f"Value: {value}")
-                df_placeholder.line_chart(
-                    df.filter((pl.col("Year") == value) & (pl.col("Team_Full_Name") != "Multiple Teams")).group_by(
-                        "Team_Full_Name").agg(pl.col("PTS").mean()),
-                    x="Team_Full_Name",
-                    y="PTS"
-                    )
+                df_placeholder.line_chart(df.filter((pl.col("Year") == value) & (pl.col("Team_Full_Name") != "Multiple Teams")).group_by("Team_Full_Name").agg(pl.col("PTS").mean()),
+                              x="Team_Full_Name",
+                              y="PTS"
+                )
             with st.container():
                 st.write("This is a sectionl")
                 st.line_chart(df["G"])
