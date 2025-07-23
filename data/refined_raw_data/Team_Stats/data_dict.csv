@@ -1,0 +1,21 @@
+﻿Term,Definition
+PW,Pythagorean wins
+PL,Pythagorean losses
+MOV,Margin of victory
+SOS,Strenght of schedule
+SRS,Simple rating system; accounts of SOS
+ORtg,Based on points scored per 100 possessions
+DRtg,Based on points allowed per 100 possessions
+NRtg,Based on point differential per 100 possessions
+Pace,Possessions per 48 minutes
+FTr,Number of FTA per FGA
+3PAr,Number of 3PA per FGA
+TS%,True shooting proficiency accounting for all attempts
+eFG%_O4,Adjusted FG efficiency accounting for 3PA
+TOV%_O4,Turnovers per 100 plays
+ORB%_O4,Percentage of available ORBs grabbed
+FT/FGA_O4,FTs per FGA
+eFG%_D4,Opponent adjsuted FG efficiency accountinf for 3PA
+TOV%_D4,Opponent turnover percentage
+DRB%_D4,Percentage of available DRBs grabbed
+FT/FGA_D4,Opponent FTs per FGA
