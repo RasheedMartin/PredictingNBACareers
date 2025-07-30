@@ -16,6 +16,9 @@ CREATE TABLE IF NOT EXISTS players
     TEXT,
     birth_city
     TEXT,
+    draft_pick INTEGER DEFAULT NULL,
+    draft_class INTEGER DEFAULT NULL,
+    draft_team TEXT DEFAULT NULL,
     UNIQUE
 (
     name,
@@ -88,7 +91,7 @@ CREATE TABLE IF NOT EXISTS seasons
     PRIMARY
     KEY,
     label
-    TEXT
+    INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS stat_types
@@ -379,6 +382,175 @@ CREATE TABLE IF NOT EXISTS combine_stat_values
 
 
 CREATE TABLE IF NOT EXISTS mvp_voting
+(
+    vote_id
+    INTEGER
+    PRIMARY
+    KEY,
+    player_id
+    INTEGER
+    NOT
+    NULL,
+    team_id
+    INTEGER
+    NOT
+    NULL,
+    season_id
+    INTEGER
+    NOT
+    NULL,
+    rank
+    INTEGER,
+    first_place_votes
+    INTEGER,
+    points_won
+    INTEGER,
+    age
+    INTEGER,
+    points_max
+    INTEGER,
+    point_share
+    REAL,
+
+    FOREIGN
+    KEY
+(
+    player_id
+) REFERENCES players
+(
+    player_id
+),
+    FOREIGN KEY
+(
+    team_id
+) REFERENCES teams
+(
+    team_id
+),
+    FOREIGN KEY
+(
+    season_id
+) REFERENCES seasons
+(
+    season_id
+)
+    );
+
+CREATE TABLE IF NOT EXISTS all_nba_voting
+(
+    vote_id
+        INTEGER
+        PRIMARY
+            KEY,
+    player_id
+        INTEGER
+        NOT
+            NULL,
+    team_id
+        INTEGER
+        NOT
+            NULL,
+    season_id
+        INTEGER
+        NOT
+            NULL,
+    rank
+        TEXT,
+    first_place_votes
+        INTEGER,
+    second_place_votes
+        INTEGER,
+    third_place_votes
+        INTEGER,
+    points_won
+        INTEGER,
+    age
+        INTEGER,
+    points_max
+        INTEGER,
+    points_share
+        REAL,
+
+    FOREIGN
+        KEY
+        (
+         player_id
+            ) REFERENCES players
+        (
+         player_id
+            ),
+    FOREIGN KEY
+        (
+         team_id
+            ) REFERENCES teams
+        (
+         team_id
+            ),
+    FOREIGN KEY
+        (
+         season_id
+            ) REFERENCES seasons
+        (
+         season_id
+            )
+);
+CREATE TABLE IF NOT EXISTS all_rookie_voting
+(
+    vote_id
+        INTEGER
+        PRIMARY
+            KEY,
+    player_id
+        INTEGER
+        NOT
+            NULL,
+    team_id
+        INTEGER
+        NOT
+            NULL,
+    season_id
+        INTEGER
+        NOT
+            NULL,
+    rank
+        TEXT,
+    first_place_votes
+        INTEGER,
+    second_place_votes
+        INTEGER,
+    points_won
+        INTEGER,
+    age
+        INTEGER,
+    points_max
+        INTEGER,
+    points_share
+        REAL,
+
+    FOREIGN
+        KEY
+        (
+         player_id
+            ) REFERENCES players
+        (
+         player_id
+            ),
+    FOREIGN KEY
+        (
+         team_id
+            ) REFERENCES teams
+        (
+         team_id
+            ),
+    FOREIGN KEY
+        (
+         season_id
+            ) REFERENCES seasons
+        (
+         season_id
+            )
+);
+CREATE TABLE IF NOT EXISTS roy_voting
 (
     vote_id
     INTEGER
