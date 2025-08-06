@@ -55,6 +55,7 @@ player_stat_descriptions = {
     "2P%": "Two-Point Field Goal Percentage",
     "TRB": "Total Rebounds",
     "PF": "Personal Fouls",
+    "Player_Age": "Player Age During a Given Season",
     "3P": "Three-Point Field Goals Made",
     "DRB": "Defensive Rebounds",
     "FG%": "Field Goal Percentage",
