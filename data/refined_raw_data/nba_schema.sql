@@ -1,19 +1,16 @@
 CREATE TABLE IF NOT EXISTS players
 (
-    player_id
-    INTEGER
-    PRIMARY
-    KEY,
+    player_id INT AUTO_INCREMENT PRIMARY KEY,
     name
-    TEXT
+    VARHAR(150)
     NOT
     NULL,
     birth_year
     INTEGER,
     college
-    TEXT,
+    VARCHAR(150),
     birth_state
-    TEXT,
+    VARCHAR(150),
     birth_city
     TEXT,
     draft_pick INTEGER DEFAULT NULL,
@@ -256,6 +253,10 @@ CREATE TABLE IF NOT EXISTS team_stat_values
     INTEGER
     NOT
     NULL,
+    stat_type_id
+    INTEGER
+    NOT
+    NULL, -- e.g., "per_game", "total", "advanced"
     stat_id
     INTEGER
     NOT
@@ -277,6 +278,13 @@ CREATE TABLE IF NOT EXISTS team_stat_values
 ) REFERENCES seasons
 (
     season_id
+),
+FOREIGN KEY
+(
+    stat_type_id
+) REFERENCES stat_types
+(
+    stat_type_id
 ),
     FOREIGN KEY
 (

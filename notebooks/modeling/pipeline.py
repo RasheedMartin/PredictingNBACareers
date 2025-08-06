@@ -160,7 +160,7 @@ def print_precision_recall_curve(y_test, model, X_test_processed, classes=None):
         classes = ["Bust", "Role", "Star"]
     n_classes = len(classes)
 
-    # Binarize the labels
+# Binarize the labels
     y_test_bin = label_binarize(y_test, classes=list(range(n_classes)))  # y_test must be 0–(n-1)
     y_score = model.predict_proba(X_test_processed)  # shape (n_samples, n_classes)
 
