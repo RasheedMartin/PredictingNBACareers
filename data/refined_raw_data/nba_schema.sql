@@ -1,16 +1,16 @@
 CREATE TABLE IF NOT EXISTS players
 (
-    player_id INT AUTO_INCREMENT PRIMARY KEY,
+    player_id INTEGER PRIMARY KEY,
     name
-    VARHAR(150)
+    TEXT
     NOT
     NULL,
     birth_year
     INTEGER,
     college
-    VARCHAR(150),
+    TEXT,
     birth_state
-    VARCHAR(150),
+    TEXT,
     birth_city
     TEXT,
     draft_pick INTEGER DEFAULT NULL,

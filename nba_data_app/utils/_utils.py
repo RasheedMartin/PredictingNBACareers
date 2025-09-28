@@ -72,7 +72,7 @@ def load_data(filters=None):
             seasons = filters.get("year_range", None)
             if seasons:
                 start_year, end_year = seasons
-                valid_years = [f"{year}-{str(year + 1)[2:]}" for year in range(start_year, end_year + 1)]
+                valid_years = [f"{year}" for year in range(start_year, end_year + 1)]
                 seasons_placeholder = ', '.join(['?'] * len(valid_years))
                 conditions.append(f"s.label IN ({seasons_placeholder})")
                 params.extend(valid_years)
@@ -81,6 +81,7 @@ def load_data(filters=None):
                 query += " WHERE " + " AND ".join(conditions)
     
             query += " ORDER BY p.name, s.label"
+            print(query)
             return pl.from_arrow(conn.execute(query, params).arrow())
         return pl.from_arrow(conn.execute(query).arrow())
     

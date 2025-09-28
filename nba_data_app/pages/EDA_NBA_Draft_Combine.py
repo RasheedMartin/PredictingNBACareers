@@ -91,7 +91,7 @@ This analysis supports downstream modeling and provides actionable insights for 
 elif page == "Seasons Distribution":
     st.markdown("---")
     st.subheader("Distribution of Players Across Seasons")
-    tab1, tab2= st.tabs(['CountPlot', 'Draft Combine Participation'])
+    tab1, tab2 = st.tabs(['CountPlot', 'Draft Combine Participation'])
 
     # Lets turn the data from long to wide format
     raw_data = load_data()
@@ -243,7 +243,7 @@ elif page == "Univariate Analysis":
 
     df_wide_view_positions = df_wide_view_positions.drop_nulls("Position")
     with st.expander("Data Overview"):
-        tab = st.tabs(['Feature Distribution'])
+        tab, = st.tabs(['Feature Distribution'])
 
         with tab:
             st.subheader("Feature Distribution")
