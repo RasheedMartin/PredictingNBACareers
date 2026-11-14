@@ -1,13 +1,14 @@
 import plotly.express as px
 import streamlit as st
 
-from lib import TIER_COLORS, footer, load_predictions
+from lib import TIER_COLORS, footer, load_metrics, load_predictions, year_span
 
 preds = load_predictions()
+spans = {k: year_span(load_metrics()["data"][k]["seasons"]) for k in ("forecast", "holdout")}
 
 st.title("Rookie Forecasts")
 
-tab_future, tab_report = st.tabs(["Forecasts: 2020–22 rookies", "Report card: 2015–19 rookies"])
+tab_future, tab_report = st.tabs([f"Forecasts: {spans['forecast']} rookies", f"Report card: {spans['holdout']} rookies"])
 
 TABLE_COLS = {
     "Player": st.column_config.TextColumn("Player"),
@@ -52,7 +53,7 @@ with tab_report:
     ho = preds[preds.split == "holdout"].copy()
     ho["correct"] = ho.predicted == ho.Player_Label
     st.markdown(
-        f"The 2015–19 rookie classes were **held out** of training and model selection entirely. "
+        f"The {spans['holdout']} rookie classes were **held out** of training and model selection entirely. "
         f"The model got **{ho.correct.mean():.0%}** of these {len(ho)} players right."
     )
     acc = (ho.groupby("Rookie Season").correct.mean().rename("Accuracy").reset_index())

@@ -42,7 +42,7 @@ This analysis supports downstream modeling and provides actionable insights for 
 
     st.sidebar.title('Filters')
 
-    year_range = st.sidebar.slider('Year Range', 2000, 2025, (2005, 2020))
+    year_range = st.sidebar.slider('Year Range', 2000, 2026, (2005, 2020))
     positions = st.sidebar.multiselect('Positions', ['PG', 'SG', 'PF', 'SF', 'C'], default=['PG', 'SF', 'C'])
 
     filters = {

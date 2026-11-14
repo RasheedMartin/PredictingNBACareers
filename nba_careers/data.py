@@ -27,12 +27,16 @@ def load_table(path=config.MODELING_TABLE) -> pd.DataFrame:
 
 def assign_split(df: pd.DataFrame) -> pd.Series:
     """
-    A row is only usable when the player has a *real* third season
+    A row is only usable when the player has a *real* rookie season and a *real* third season
     (Season_third == Season + 2). For shorter careers the source data fills
     "third season" with the last season played, and the career-average label is
     computed from those same seasons, so features and label overlap (leakage).
     """
     real_third = df["seasons_to_third"] == 2
+    # Players already in the league when the data starts (1976-77) look like
+    # rookies but aren't; their "first three seasons" are mid-career.
+    if "left_censored" in df:
+        real_third &= ~df["left_censored"].astype(bool)
     resolved = df["Season"] <= config.LAST_RESOLVED_ROOKIE_SEASON
     holdout = df["Season"] >= config.HOLDOUT_START_SEASON
 

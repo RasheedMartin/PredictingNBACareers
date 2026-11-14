@@ -22,6 +22,12 @@ def season_label(start_year) -> str:
     return f"{y}-{(y + 1) % 100:02d}"
 
 
+def year_span(seasons) -> str:
+    """[2020, 2023] -> '2020–23' (rookie-season start years)."""
+    a, b = int(seasons[0]), int(seasons[1])
+    return str(a) if a == b else f"{a}–{b % 100:02d}"
+
+
 @st.cache_data
 def load_metrics() -> dict:
     return json.loads(config.METRICS_PATH.read_text())

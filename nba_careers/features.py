@@ -19,7 +19,8 @@ LABEL_SOURCE_COLUMNS = [
 ]
 
 # Identifiers / bookkeeping, not predictive signal.
-ID_COLUMNS = ["Player", "Season", "Season_third", "Team", "Draft_Class", "All_Rookie_Rank"]
+ID_COLUMNS = ["Player", "bbref_id", "left_censored", "Season", "Season_third", "Team", "Draft_Class",
+              "All_Rookie_Rank"]
 
 # Draft position only exists for 2000+ rookies in this dataset; before that it is
 # always missing, so it would act as an "era" flag rather than a scouting signal.

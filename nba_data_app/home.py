@@ -1,6 +1,6 @@
 import streamlit as st
 
-from lib import footer, load_metrics, load_predictions
+from lib import footer, load_metrics, load_predictions, year_span
 
 metrics = load_metrics()
 preds = load_predictions()
@@ -23,7 +23,8 @@ c1.metric("Accuracy on unseen rookie classes", f"{ho['accuracy']:.0%}",
           f"+{ho['accuracy'] - metrics['baseline_majority_holdout']['accuracy']:.0%} vs. baseline")
 c2.metric("Macro F1", f"{ho['f1_macro']:.2f}")
 c3.metric("Players scored", f"{len(preds):,}")
-c4.metric("Careers forecast (2020–22 rookies)", metrics["data"]["forecast"]["n"])
+c4.metric(f"Careers forecast ({year_span(metrics['data']['forecast']['seasons'])} rookies)",
+          metrics["data"]["forecast"]["n"])
 
 st.markdown("---")
 a, b, c = st.columns(3)
@@ -33,7 +34,8 @@ with a:
     st.page_link("views/player_lookup.py", label="Look up a player", icon=":material/arrow_forward:")
 with b:
     st.subheader("📈 Rookie Forecasts")
-    st.write("Who from the 2020–2022 draft classes is on a star trajectory? See every prediction.")
+    st.write(f"Who from the {year_span(metrics['data']['forecast']['seasons'])} rookie classes is on a star "
+             "trajectory? See every prediction.")
     st.page_link("views/rookie_forecasts.py", label="See the forecasts", icon=":material/arrow_forward:")
 with c:
     st.subheader("🧪 Model & Methodology")

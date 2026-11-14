@@ -126,8 +126,12 @@ was inflated:
 
 * **Short careers leaked the label.** For players with fewer than three seasons, the dataset fills
   "third-season" stats with their *last* season, and the career-average label is computed from those same
-  seasons. The model was partly reading the answer. {d['rows_excluded_short_career']:,} such players
-  are now excluded.
+  seasons. The model was partly reading the answer.
+* **Veterans were treated as rookies.** The data starts in 1976-77, so players already in the league
+  then had mid-career seasons counted as their "first three". Together with short careers,
+  {d['rows_excluded_short_career']:,} such players are now excluded.
+* **Fathers and sons were merged.** Players were matched by name, so Patrick Ewing Sr. and Jr. (and others)
+  became one "career". The rebuilt data warehouse keys players by Basketball-Reference ID.
 * **Feature selection ran before the split.** Correlation filtering and RFECV used every row, including
   test rows. Selection now happens inside the pipeline on each training fold.
 * **Random splits mixed eras.** Testing on the most recent rookie classes (temporal holdout) mirrors how
