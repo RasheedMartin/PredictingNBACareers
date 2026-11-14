@@ -1,0 +1,77 @@
+name: Refresh NBA data
+
+# After each season (awards are announced by late May, the draft is in late June),
+# fetch the new season from Basketball-Reference, rebuild the warehouse and modeling
+# table, retrain, and open a pull request with the results for review.
+# Merging the PR redeploys the app.
+on:
+  schedule:
+    - cron: "0 14 15 7 *"   # July 15, every year
+  workflow_dispatch:
+    inputs:
+      seasons:
+        description: "Season END years to (re)fetch, space separated (blank = any missing completed seasons)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-pipeline.txt pytest==9.2.0
+
+      - name: Fetch new season data
+        run: |
+          if [ -n "${{ inputs.seasons }}" ]; then
+            python -m nba_careers.etl fetch --season ${{ inputs.seasons }}
+          else
+            python -m nba_careers.etl fetch
+          fi
+
+      - name: Rebuild warehouse + modeling table, retrain
+        run: python -m nba_careers.etl refresh
+
+      - name: Tests
+        run: pytest -q
+
+      - name: Summarize
+        id: summary
+        run: |
+          python - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          m = json.load(open("models/metrics.json"))
+          d, h = m["data"], m["holdout"]
+          print(f"**Model:** {m['selected_model']}  \n**Holdout accuracy:** {h['accuracy']:.1%} "
+                f"(macro F1 {h['f1_macro']:.3f}, baseline {m['baseline_majority_holdout']['accuracy']:.1%})  \n"
+                f"**Train / holdout / forecast:** {d['train']['n']} / {d['holdout']['n']} / {d['forecast']['n']}")
+          EOF
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: data-refresh
+          delete-branch: true
+          title: "Data refresh: new NBA season"
+          commit-message: "Refresh NBA data, rebuild modeling table, retrain model"
+          body: |
+            Automated refresh from Basketball-Reference (`python -m nba_careers.etl refresh`).
+
+            Review before merging:
+            - [ ] New raw CSVs under `data/raw_data/` look right
+            - [ ] `models/metrics.json`: holdout metrics didn't regress unexpectedly
+            - [ ] App pages render (CI runs the app smoke test on this PR)
+
+            See the workflow run summary for headline metrics.
+          add-paths: |
+            data/raw_data/**
+            data/refined_raw_data/Player_Type_Modeling/**
+            data/app/nba_data.duckdb
+            models/**

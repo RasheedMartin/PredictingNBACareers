@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-pipeline.txt pytest==9.2.0
+      - name: Data pipeline is reproducible (raw CSVs -> warehouse -> modeling table)
+        run: |
+          python -m nba_careers.etl warehouse
+          python -m nba_careers.etl table
+          git diff --exit-code -- data/refined_raw_data/Player_Type_Modeling/ \
+            || (echo "::error::Modeling table differs from a clean rebuild. Run 'python -m nba_careers.etl refresh' and commit." && exit 1)
+      - name: Unit tests + artifact consistency
+        run: pytest -q
+      - name: Pipeline smoke test (tiny grids)
+        run: |
+          cp -r models /tmp/models-committed
+          python -m nba_careers.train --quick
+          rm -rf models && mv /tmp/models-committed models   # keep the committed artifacts
+      - name: App smoke test
+        run: |
+          python - <<'EOF'
+          from streamlit.testing.v1 import AppTest
+          pages = ["views/player_lookup.py", "views/rookie_forecasts.py",
+                   "views/model_performance.py", "views/EDA_NBA_Draft_Combine.py"]
+          at = AppTest.from_file("nba_data_app/app.py", default_timeout=180).run()
+          assert not at.exception, at.exception
+          for page in pages:
+              at.switch_page(page).run()
+              assert not at.exception, (page, [e.value for e in at.exception])
+          print("all pages render")
+          EOF
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t nba-careers .
+      - name: Container health check
+        run: |
+          docker run -d -e PORT=8501 -p 8501:8501 --name app nba-careers
+          for i in $(seq 1 30); do curl -sf localhost:8501/_stcore/health && exit 0; sleep 2; done
+          docker logs app; exit 1

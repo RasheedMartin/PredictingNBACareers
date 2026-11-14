@@ -1,0 +1,5 @@
+# Extra dependencies for the data pipeline (python -m nba_careers.etl ...)
+-r requirements.txt
+requests==2.34.2
+beautifulsoup4==4.15.0
+lxml==6.1.3

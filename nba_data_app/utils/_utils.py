@@ -13,16 +13,14 @@ from scipy.stats import (
 )
 
 
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))  # Add project root to sys.path
+from nba_careers.config import APP_DB
 
 def get_duckdb_connection(db_path=None, read_only=True) -> duckdb.DuckDBPyConnection:
     """
     Establishes a connection to a DuckDB database.
     Parameters:
         db_path (Path or str, optional): Path to the DuckDB database file. If None, defaults to
-            '../../data/refined_raw_data/nba_data.duckdb' relative to the current working directory.
+            the slim app database at data/app/nba_data.duckdb.
         read_only (bool, optional): If True, opens the database in read-only mode. Defaults to True.
     Returns:
         duckdb.DuckDBPyConnection: A connection object to the specified DuckDB database.
@@ -31,18 +29,16 @@ def get_duckdb_connection(db_path=None, read_only=True) -> duckdb.DuckDBPyConnec
     Prints:
         The resolved path to the DuckDB database upon successful connection.
     """
-    if db_path is None:
-        db_path = Path.cwd().parent.parent / "data/refined_raw_data/nba_data.duckdb"
-    
+    db_path = Path(db_path) if db_path is not None else APP_DB
+
     if not db_path.exists():
         raise FileNotFoundError(f"DuckDB database not found at {db_path}")
-    print(f"Connected to: {db_path.resolve()}")
     return duckdb.connect(db_path, read_only=read_only)
 
 
 @st.cache_data(ttl=3600)
 def load_data(filters=None):
-    with get_duckdb_connection(Path("data/refined_raw_data/nba_data.duckdb")) as conn:
+    with get_duckdb_connection(APP_DB) as conn:
         
         query = """
             SELECT 
@@ -72,7 +68,7 @@ def load_data(filters=None):
             seasons = filters.get("year_range", None)
             if seasons:
                 start_year, end_year = seasons
-                valid_years = [f"{year}-{str(year + 1)[2:]}" for year in range(start_year, end_year + 1)]
+                valid_years = list(range(start_year, end_year + 1))  # seasons.label is an INTEGER year
                 seasons_placeholder = ', '.join(['?'] * len(valid_years))
                 conditions.append(f"s.label IN ({seasons_placeholder})")
                 params.extend(valid_years)
@@ -81,8 +77,8 @@ def load_data(filters=None):
                 query += " WHERE " + " AND ".join(conditions)
     
             query += " ORDER BY p.name, s.label"
-            return pl.from_arrow(conn.execute(query, params).arrow())
-        return pl.from_arrow(conn.execute(query).arrow())
+            return pl.from_arrow(conn.execute(query, params).to_arrow_table())
+        return pl.from_arrow(conn.execute(query).to_arrow_table())
     
 
 def univariate_eda(df: pl.DataFrame, column=None, bins=30):
@@ -153,7 +149,7 @@ def plot_stats_by_position(col: str, df: pl.DataFrame):
     # Note: Seaborn's barplot automatically calculates the mean and standard deviation
     # but we will add error bars manually for better control
     ax = sns.barplot(
-        df,
+        df.to_pandas(),
         x="Position",
         y=f"{col}_mean",
         capsize=5,
