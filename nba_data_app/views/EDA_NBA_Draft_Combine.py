@@ -13,18 +13,14 @@ from utils._utils import (
     combine_stat_tests_by_position
 )
 
+from nba_careers.config import APP_DB
+from lib import footer
+
 ### App Layout
-st.set_page_config(
-    page_title="NBA Draft Combine EDA",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 st.title("Exploratory Data Analysis: NBA Draft Combine")
 
 
 page = st.sidebar.selectbox("Select a Page", ["Overview", "Seasons Distribution", "Univariate Analysis", "Bivariate Analysis"])
-st.sidebar.markdown("---")
-st.sidebar.markdown("[📂 View this project on GitHub](https://github.com/RasheedMartin/PredictingNBACareers)")
 
 # Sidebar page selector
 
@@ -73,7 +69,7 @@ This analysis supports downstream modeling and provides actionable insights for 
     dataframe.dataframe(data.sort("Season", descending=True))
     st.markdown("---")
     st.subheader("Data Dictionary")
-    with get_duckdb_connection(Path("data/refined_raw_data/nba_data.duckdb")) as conn:
+    with get_duckdb_connection(APP_DB) as conn:
         stat_columns = data.drop("Position", "Season", "Player").columns
 
         data_dictionary = pl.from_arrow(conn.execute(
@@ -82,7 +78,7 @@ This analysis supports downstream modeling and provides actionable insights for 
             FROM nba_data.main.combine_stat_values csv
             JOIN nba_data.main.stats s ON s.stat_id = csv.stat_id
             """
-        ).arrow()).unique("Stat").sort("Stat")
+        ).to_arrow_table()).unique("Stat").sort("Stat")
         st.dataframe(data_dictionary)
 
         st.subheader("Stat Descriptions")
@@ -160,10 +156,7 @@ elif page == "Seasons Distribution":
 
         # 3. Convert season to numeric for trendline
         seasons_str = avg_attendance["Season"].to_list()
-        try:
-            seasons = [int(s[:4]) for s in seasons_str]  # Because format "2003-04"
-        except:
-            seasons = list(range(len(seasons_str)))      # fallback
+        seasons = [int(s) for s in seasons_str]  # seasons.label is an INTEGER year
 
         values = avg_attendance["Proportion"].to_list()
 
@@ -233,17 +226,16 @@ elif page == "Univariate Analysis":
         index=["Position", "Player", "Season"],
         on="Stat"
     )
-    df_wide_view_positions = data.with_columns(
-        pl.when(pl.col("Position").str.contains("/", literal=True))
-        .then(pl.col("Position").str.split("/"))
-        .otherwise(pl.col("Position").map_elements(lambda x: [x], return_dtype=pl.List(pl.String)))
-        .replace("", None)
-        .alias("Position")
-    ).explode("Position")
+    # "PG/SG" -> one row per position
+    df_wide_view_positions = (
+        data.with_columns(pl.col("Position").str.split("/"))
+        .explode("Position")
+        .with_columns(pl.col("Position").replace("", None))
+    )
 
     df_wide_view_positions = df_wide_view_positions.drop_nulls("Position")
     with st.expander("Data Overview"):
-        tab = st.tabs(['Feature Distribution'])
+        (tab,) = st.tabs(['Feature Distribution'])
 
         with tab:
             st.subheader("Feature Distribution")
@@ -303,13 +295,12 @@ elif page == "Bivariate Analysis":
             index=["Position", "Player", "Season"],
             on="Stat"
         )
-        df_wide_view_positions = data.with_columns(
-            pl.when(pl.col("Position").str.contains("/", literal=True))
-            .then(pl.col("Position").str.split("/"))
-            .otherwise(pl.col("Position").map_elements(lambda x: [x], return_dtype=pl.List(pl.String)))
-            .replace("", None)
-            .alias("Position")
-        ).explode("Position")
+        # "PG/SG" -> one row per position
+        df_wide_view_positions = (
+            data.with_columns(pl.col("Position").str.split("/"))
+            .explode("Position")
+            .with_columns(pl.col("Position").replace("", None))
+        )
 
         df_wide_view_positions = df_wide_view_positions.drop_nulls("Position")
 
@@ -383,11 +374,13 @@ elif page == "Bivariate Analysis":
             )
             plt.figure(figsize=(10, 6))
             sns.barplot(
-                data=top_corrs,
+                data=top_corrs.with_columns(
+                    (pl.col("Feature1") + " vs " + pl.col("Feature2")).alias("Pair")
+                ).to_pandas(),
                 x="AbsCorrelation",
-                y=top_corrs["Feature1"] + " vs " + top_corrs["Feature2"],
+                y="Pair",
                 palette="pastel",
-                hue=top_corrs["Feature1"],
+                hue="Feature1",
                 legend=False
             )
             plt.title(f"Top {15} Strongest Correlations Between Combine Metrics")
@@ -561,7 +554,7 @@ elif page == "Bivariate Analysis":
                     values="TTest_p",
                     on="Stat"
                 ).sort("Position_Comparison").fill_null(1.0)
-                .with_columns(pl.col({stat_cat}).map_elements(lambda x: f"{x:.2e}"))
+                .with_columns(pl.col(stat_cat).map_elements(lambda x: f"{x:.2e}", return_dtype=pl.String))
                 )  # Fill nulls with 1.0 for no significant difference
 
                 st.markdown("""
@@ -587,3 +580,5 @@ elif page == "Bivariate Analysis":
                 NBA Draft Combine data robustly differentiates player positions on physical, athletic, and body composition metrics. 
                             These differences are statistically significant and align with the demands of each role, supporting the use of combine stats for scouting and player evaluation.
                 """)
+
+footer()

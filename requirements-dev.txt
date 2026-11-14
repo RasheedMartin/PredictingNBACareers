@@ -1,0 +1,16 @@
+-r requirements.txt
+# Tests
+pytest==9.2.0
+# Notebooks, scraping, and exploratory modeling
+jupyter
+beautifulsoup4>=4.13.4
+html5lib>=1.1
+kagglehub>=0.3.12
+requests>=2.32.4
+tqdm>=4.67.1
+statsmodels>=0.14.2
+xgboost>=3.0
+openpyxl>=3.1.2
+xlrd>=2.0.1
+python-dotenv>=1.0.1
+watchdog>=4.0.0

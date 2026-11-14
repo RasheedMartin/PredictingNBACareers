@@ -1,0 +1,10 @@
+[project]
+name = "predicting-nba-careers"
+version = "1.0.0"
+description = "Predict whether an NBA player becomes a Bust, Role, or Star player from early-career stats."
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+filterwarnings = ["ignore::UserWarning", "ignore::RuntimeWarning"]

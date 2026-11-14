@@ -1,0 +1,12 @@
+.git
+.venv
+venv
+**/__pycache__
+**/.ipynb_checkpoints
+notebooks
+visualizations
+data/raw_data
+data/depreciated_datasets
+data/clean_data
+*.duckdb.wal
+!data/app/nba_data.duckdb

@@ -1,0 +1,250 @@
+{
+  "trained_at": "2026-11-14T20:22:54+00:00",
+  "versions": {
+    "python": "3.12.13",
+    "scikit-learn": "1.9.1"
+  },
+  "labels": [
+    "Bust Player",
+    "Role Player",
+    "Star Player"
+  ],
+  "data": {
+    "source": "data/refined_raw_data/Player_Type_Modeling/player_3tier_label_with_target_all_years.csv",
+    "rows_total": 3855,
+    "rows_excluded_short_career": 1638,
+    "train": {
+      "n": 1715,
+      "seasons": [
+        1976,
+        2014
+      ],
+      "label_counts": {
+        "Star Player": 870,
+        "Role Player": 630,
+        "Bust Player": 215
+      }
+    },
+    "holdout": {
+      "n": 314,
+      "seasons": [
+        2015,
+        2019
+      ],
+      "label_counts": {
+        "Role Player": 137,
+        "Star Player": 107,
+        "Bust Player": 70
+      }
+    },
+    "forecast": {
+      "n": 188,
+      "seasons": [
+        2020,
+        2022
+      ]
+    },
+    "n_candidate_features": 239
+  },
+  "selected_model": "Logistic Regression",
+  "selection_rule": {
+    "rule": "one-standard-error, simplest family first",
+    "top_cv_family": "Gradient Boosting",
+    "threshold_f1_macro": 0.7046851803354615
+  },
+  "selected_params": {
+    "model__C": 1.0,
+    "select__k": 60
+  },
+  "selected_features": [
+    "2P",
+    "2PA",
+    "3P",
+    "3PA",
+    "AST",
+    "BLK",
+    "DRB",
+    "DWS",
+    "FG",
+    "FGA",
+    "FT",
+    "FTA",
+    "G",
+    "GS",
+    "MP",
+    "OBPM",
+    "ORB",
+    "OWS",
+    "PER",
+    "PF",
+    "PTS",
+    "STL",
+    "TOV",
+    "TRB",
+    "VORP",
+    "WS",
+    "PF_avg_yoy_growth",
+    "All_Rookie_Point_Share",
+    "2P_third",
+    "2PA_third",
+    "3P_third",
+    "3PA_third",
+    "AST_third",
+    "BLK_third",
+    "BPM_third",
+    "DRB_third",
+    "DWS_third",
+    "FG_third",
+    "FG%_third",
+    "FGA_third",
+    "FT_third",
+    "FTA_third",
+    "G_third",
+    "GS_third",
+    "MP_third",
+    "OBPM_third",
+    "ORB_third",
+    "OWS_third",
+    "PER_third",
+    "PF_third",
+    "PTS_third",
+    "STL_third",
+    "TOV_third",
+    "TRB_third",
+    "TS%_third",
+    "USG%_third",
+    "VORP_third",
+    "WS_third",
+    "WS/48_third",
+    "eFG%_third"
+  ],
+  "families": {
+    "Logistic Regression": {
+      "best_params": {
+        "model__C": 1.0,
+        "select__k": 60
+      },
+      "cv": {
+        "f1_macro": 0.7085523801474243,
+        "accuracy": 0.753935860058309,
+        "balanced_accuracy": 0.7031962424103564,
+        "log_loss": 0.5403070937778125,
+        "f1_macro_std": 0.04301986548770711
+      },
+      "holdout": {
+        "accuracy": 0.7165605095541401,
+        "balanced_accuracy": 0.7064160161642937,
+        "f1_macro": 0.7197964126119847,
+        "log_loss": 0.5776413949868161
+      }
+    },
+    "Random Forest": {
+      "best_params": {
+        "model__max_depth": null,
+        "model__min_samples_leaf": 1,
+        "select__k": "all"
+      },
+      "cv": {
+        "f1_macro": 0.700333809432206,
+        "accuracy": 0.7545189504373179,
+        "balanced_accuracy": 0.6865089972547872,
+        "log_loss": 0.5646390944049767,
+        "f1_macro_std": 0.016249910600395906
+      },
+      "holdout": {
+        "accuracy": 0.7420382165605095,
+        "balanced_accuracy": 0.7379246944019439,
+        "f1_macro": 0.7452597154089692,
+        "log_loss": 0.623773107315156
+      }
+    },
+    "Gradient Boosting": {
+      "best_params": {
+        "model__learning_rate": 0.03,
+        "model__max_depth": null,
+        "model__max_iter": 200,
+        "select__k": 60
+      },
+      "cv": {
+        "f1_macro": 0.7152842675465066,
+        "accuracy": 0.7545189504373179,
+        "balanced_accuracy": 0.7111662699473444,
+        "log_loss": 0.7115900622795509,
+        "f1_macro_std": 0.023700279503345578
+      },
+      "holdout": {
+        "accuracy": 0.6910828025477707,
+        "balanced_accuracy": 0.6820113760764556,
+        "f1_macro": 0.6915094737816702,
+        "log_loss": 0.7718226172846931
+      }
+    }
+  },
+  "holdout": {
+    "accuracy": 0.7165605095541401,
+    "balanced_accuracy": 0.7064160161642937,
+    "f1_macro": 0.7197964126119847,
+    "log_loss": 0.5776413949868161,
+    "confusion_matrix": [
+      [
+        46,
+        23,
+        1
+      ],
+      [
+        11,
+        103,
+        23
+      ],
+      [
+        0,
+        31,
+        76
+      ]
+    ],
+    "report": {
+      "Bust Player": {
+        "precision": 0.8070175438596491,
+        "recall": 0.6571428571428571,
+        "f1-score": 0.7244094488188977,
+        "support": 70.0
+      },
+      "Role Player": {
+        "precision": 0.6560509554140127,
+        "recall": 0.7518248175182481,
+        "f1-score": 0.7006802721088435,
+        "support": 137.0
+      },
+      "Star Player": {
+        "precision": 0.76,
+        "recall": 0.7102803738317757,
+        "f1-score": 0.7342995169082126,
+        "support": 107.0
+      },
+      "accuracy": 0.7165605095541401,
+      "macro avg": {
+        "precision": 0.7410228330912206,
+        "recall": 0.7064160161642937,
+        "f1-score": 0.7197964126119847,
+        "support": 314.0
+      },
+      "weighted avg": {
+        "precision": 0.7251280540187744,
+        "recall": 0.7165605095541401,
+        "f1-score": 0.717426455431252,
+        "support": 314.0
+      }
+    }
+  },
+  "baseline_majority_holdout": {
+    "accuracy": 0.34076433121019106,
+    "balanced_accuracy": 0.3333333333333333,
+    "f1_macro": 0.16943784639746637,
+    "log_loss": 23.761261947602705
+  },
+  "leakage": {
+    "naive_setup_cv_accuracy": 0.8171206225680935,
+    "note": "Original setup: all rows including players with <3 seasons, random CV."
+  },
+  "train_seconds": 37.7
+}
