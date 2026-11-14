@@ -125,10 +125,13 @@ docker run -p 8501:8501 nba-careers
 
 ## Deploying (Railway)
 
-The repo deploys as-is via `railway.toml` (Dockerfile build, health check on `/_stcore/health`, `$PORT` honoured).
+Railway's settings live in code, in `.railway/railway.py` (Dockerfile build, health check on `/_stcore/health`). The app honours `$PORT`.
 
 ```bash
-railway up          # build & deploy from the local directory
+pip install -r .railway/requirements.txt   # Railway's Python SDK, used by the CLI to read railway.py
+railway config plan                         # preview config changes
+railway config apply                        # apply them
+railway up --service predicting-nba-careers # build & deploy from the local directory
 ```
 
 Or connect the GitHub repo in the Railway dashboard to deploy automatically on every push to `main`.
